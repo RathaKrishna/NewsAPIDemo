@@ -69,7 +69,7 @@ class BreakingNewsCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(with viewModel: NewsViewModel) {
-        imgView.sd_setImage(with: URL(string: viewModel.imgUrl ?? ""))
+        imgView.sd_setImage(with: URL(string: viewModel.imgUrl ?? ""), placeholderImage: UIImage(named: "no_data"))
         titleLabel.text = viewModel.title
 //        descLabel.text = viewModel.content
     }

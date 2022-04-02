@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     }()
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Home"
+        title = "News Today"
         view.backgroundColor = .systemBackground
         
         view.addSubview(collectionView)
