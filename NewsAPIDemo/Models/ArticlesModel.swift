@@ -16,14 +16,11 @@ struct Articles: Codable {
     let content: String?
     let description: String?
     let publishedAt: String?
-    let source: SourceModel
+//    let source: Source
     let title: String?
     let url: String?
     let urlToImage: String?
     
 }
 
-struct SourceModel: Codable {
-    let id: String?
-    let name: String?
-}
+

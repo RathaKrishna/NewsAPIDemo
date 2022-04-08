@@ -15,10 +15,10 @@ final class APICaller {
     
     struct Constants {
         static let baseUrl = "https://newsapi.org/v2/"
-        static let breakingNewsUrl = baseUrl + "top-headlines?country=IN"
-        static let newsUrl = baseUrl + "everything?q=all"
+        static let breakingNewsUrl = baseUrl + "top-headlines?country=in&category=entertainment"
+        static let newsUrl = baseUrl + "top-headlines?country=in&category=sports"
         static let searchUrl = baseUrl + "everything?sortBy=popularity"
-        static let sourcesUrl = ""
+        static let sourcesUrl = baseUrl + "top-headlines/sources?country=IN"
         
     }
     
@@ -56,8 +56,8 @@ final class APICaller {
     }
     
     // MARK: - Get everything
-    public func getAllNews(completion: @escaping (Result<[Articles], Error>) -> Void) {
-        creatRequestWith(Method: .get, URL: Constants.newsUrl, Parameter: nil) { response in
+    public func getAllNews(with source: String, completion: @escaping (Result<[Articles], Error>) -> Void) {
+        creatRequestWith(Method: .get, URL: Constants.newsUrl + "&source=\(source)", Parameter: nil) { response in
             guard let data = response.data, response.error == nil else {
                 completion(.failure(APIError.failedToGetData))
                 return
@@ -96,6 +96,29 @@ final class APICaller {
         }
         
     }
+    
+    // MARK: Get Source list
+    public func getSources(completion: @escaping (Result<[Source], Error>) -> Void) {
+        
+        creatRequestWith(Method: .get, URL: Constants.sourcesUrl, Parameter: nil) { response in
+            
+            guard let data = response.data , response.error == nil else {
+                completion(.failure(APIError.failedToGetData))
+                return
+            }
+            do {
+                
+                let result = try JSONDecoder().decode(SourceModel.self
+                                                      , from: data)
+                completion(.success(result.sources))
+            }
+            catch {
+                completion(.failure(error))
+            }
+        }
+        
+    }
+    
     
     // Authorization with Key
     private let headers: HTTPHeaders = [

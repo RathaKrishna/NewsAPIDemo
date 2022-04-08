@@ -25,6 +25,7 @@ class SearchResultViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
        
+    
     }
 
     override func viewDidLayoutSubviews() {
