@@ -11,8 +11,19 @@ import SafariServices
 
 class ViewController: UIViewController {
     
+    
+    
     private var articles: [Articles] = []
     private var breakingNews: [Articles] = []
+    
+    let searchController: UISearchController = {
+        let results = SearchResultViewController()
+        let vc = UISearchController(searchResultsController: results)
+        vc.searchBar.placeholder = "Search News..."
+        vc.searchBar.searchBarStyle = .minimal
+        vc.definesPresentationContext = true
+        return vc
+    } ()
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout { sectionIndex, _ -> NSCollectionLayoutSection? in
             return ViewController.createSectionLayout(section: sectionIndex)
@@ -26,8 +37,12 @@ class ViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         view.addSubview(collectionView)
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        navigationItem.searchController = searchController
         configureCollectionView()
         fetchData()
+     
     }
     
     override func viewDidLayoutSubviews() {
@@ -173,3 +188,32 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
 }
+
+extension ViewController: UISearchBarDelegate, UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        //
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let resultController = searchController.searchResultsController as? SearchResultViewController, let query = searchBar.text, !query.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return
+            
+        }
+        
+     
+        
+        APICaller.shared.searchNews(with: query, completion: { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let articles):
+                    resultController.update(with: articles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        })
+ 
+    }
+    
+}
+

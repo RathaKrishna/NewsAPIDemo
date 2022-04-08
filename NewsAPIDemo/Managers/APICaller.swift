@@ -16,8 +16,8 @@ final class APICaller {
     struct Constants {
         static let baseUrl = "https://newsapi.org/v2/"
         static let breakingNewsUrl = baseUrl + "top-headlines?country=IN"
-        static let newsUrl = baseUrl + "everything?q=sports"
-        static let searchUrl = ""
+        static let newsUrl = baseUrl + "everything?q=all"
+        static let searchUrl = baseUrl + "everything?sortBy=popularity"
         static let sourcesUrl = ""
         
     }
@@ -72,6 +72,29 @@ final class APICaller {
                 completion(.failure(error))
             }
         }
+    }
+    
+    // MARK: Search News
+    public func searchNews(with query: String, completion: @escaping (Result<[Articles], Error>) -> Void) {
+        
+        creatRequestWith(Method: .get, URL: Constants.searchUrl + "&q=\(query)&from=\(DateFormatter.df.string(from: Date().threeDayBefore))", Parameter: nil) { response in
+            
+            guard let data = response.data , response.error == nil else {
+                completion(.failure(APIError.failedToGetData))
+                return
+            }
+            do {
+                
+                let result = try JSONDecoder().decode(ArticlesModel.self
+                                                      , from: data)
+                print(result.articles)
+                completion(.success(result.articles))
+            }
+            catch {
+                completion(.failure(error))
+            }
+        }
+        
     }
     
     // Authorization with Key
